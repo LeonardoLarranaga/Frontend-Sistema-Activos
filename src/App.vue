@@ -28,6 +28,7 @@
           <v-list-item prepend-icon="mdi-package" title="Activos" link to="/activos"/>
           <v-list-item prepend-icon="mdi-account-tie" title="Responsables" link to="/responsables"/>
           <v-list-item prepend-icon="mdi-archive-marker" title="Ubicaciones" link to="/ubicaciones"/>
+          <v-list-item prepend-icon="mdi-tag-multiple" title="Tags" link to="/tags"/>
         </v-list>
       </v-navigation-drawer>
       <v-main style="height: 100vh">
