@@ -1,33 +1,29 @@
 <template>
-    <v-data-table :headers="headers" :items="responsables" :items-per-page="-1" :sort-by="[{ key: 'id', order: 'desc' }]" fixed-header height="90vh">
+    <v-data-table :headers="headers" :items="ubicaciones" :items-per-page="-1" :sort-by="[{ key: 'id', order: 'desc' }]" fixed-header height="90vh">
   
       <template v-slot:top>
         <v-toolbar color="indigo-darken-2">
-          <v-toolbar-title color="indigo-darken-2">Responsables</v-toolbar-title>
+          <v-toolbar-title color="indigo-darken-2">Ubicación</v-toolbar-title>
           <v-divider class="mx-4" inset vertical></v-divider>
   
           <v-dialog v-model="dialog" max-width="500px">
             <template v-slot:activator="{ props }">
               <v-btn prepend-icon="mdi-plus-circle-multiple" variant="tonal" elevation="10" color="white" v-bind="props">
-                Nuevo Responsable
+                Nueva Ubicación
               </v-btn>
             </template>
             
             <v-card width="120%" style="transform: translateX(-20px);">
               <v-card-title>
                 <v-icon class="text-h5 margin" style="margin-top: -5px; margin-right: 8px;">{{ this.editedIndex === -1 ? "mdi-plus-circle-multiple" : "mdi-pencil-circle"}} </v-icon>
-                <span class="text-h5 font-weight-bold"> {{this.editedIndex === -1 ? "Nuevo Responsable" : "Editar Responsable"}} </span>
+                <span class="text-h5 font-weight-bold"> {{this.editedIndex === -1 ? "Nueva Ubicación" : "Editar Ubicación"}} </span>
               </v-card-title>
   
               <v-card-text>
                 <v-container>
                   <v-row>
-                    <v-col cols="12" sm="6">
-                      <v-text-field v-model="editedItem.numeroEmpleado" label="Número de Empleado"/>
-                    </v-col>
-
-                    <v-col cols="12" sm="6">
-                      <v-text-field v-model="editedItem.nombre" label="Nombre"/>
+                    <v-col cols="12">
+                      <v-text-field v-model="editedItem.descripcion" label="Descripción"/>
                     </v-col>
                     
                     <v-col cols="12">
@@ -59,7 +55,7 @@
           <v-dialog v-model="dialogDelete" max-width="350px">
             <v-card>
               <v-card-title>
-                <p class="text-h5 font-weight-bold" style="white-space: pre-wrap; text-align: center;">¿Quieres eliminar este responsable?</p>
+                <p class="text-h5 font-weight-bold" style="white-space: pre-wrap; text-align: center;">¿Quieres eliminar esta ubicación?</p>
               </v-card-title>
               <v-card-actions>
                 <v-spacer/>
@@ -129,26 +125,19 @@
         imageModel: null,
         activosSelected: [],
         activos: [],
-        responsables: [],
+        ubicaciones: [],
         headers: [
           {
             title: "Id",
             key: "id",
             sortable: true
           },
-          { title: 'Número de Empleado', 
-            key: 'numeroEmpleado', 
-            sortable: true 
-          },
-          { 
-            title: 'Nombre', 
-            key: 'nombre', 
-            sortable: true 
+          { title: 'Descripción', 
+            key: 'descripcion'
           },
           {
             title: 'Acciones',
-            key: 'actions',
-            sortable: false
+            key: 'actions'
           }
         ],
         activosHeaders: [
@@ -173,8 +162,8 @@
             sortable: false 
           },
           {
-            title: 'Ubicación',
-            key: 'ubicacionId',
+            title: 'Responsable',
+            key: 'responsableId',
             sortable: true
           }, {
             title: 'Imagen',
@@ -184,15 +173,13 @@
         activos: [],
         editedIndex: -1,
         editedItem: {
-          id: 0,
-          numeroEmpleado: 0,
-          nombre: "",
+          id: null,
+          descripcion: null,
           imagen: null
         },
         defaultItem: {
-          id: 0,
-          numeroEmpleado: 0,
-          nombre: "",
+          id: null,
+          descripcion: null,
           imagen: null
         },
       }),
@@ -203,26 +190,28 @@
                 this.close()
                 this.imagePreview = null
                 if (this.imageEdited) {
-                    await this.fetchResponsables()
+                    await this.fetchUbicaciones()
                     this.imageEdited = false
                 }
+                this.activosSelected = []
             }
         },
+
         dialogDelete(val) {
           val || this.closeDelete()
         },
       },
 
       beforeMount() {
-        this.fetchResponsables()
+        this.fetchUbicaciones()
         this.fetchActivos()
       },
   
       methods: {
-        async fetchResponsables() {
+        async fetchUbicaciones() {
             try {
-                const response = await axios.get("https://localhost:4000/responsable/")
-                this.responsables = response.data
+                const response = await axios.get("https://localhost:4000/ubicacion/")
+                this.ubicaciones = response.data
             } catch (error) {
                 console.log(error)
             }
@@ -237,52 +226,51 @@
             }
         },
 
-        async createResponsable() {
+        async createUbicacion() {
             try {
-                const response = await axios.post("https://localhost:4000/responsable/", this.editedItem)
-                this.activosSelected.forEach(async (activo) => await axios.put(`https://localhost:4000/responsable/${response.data.responsable.id}/activo/${activo.id}`))
-                this.responsables.push(response.data.responsable)
+                const response = await axios.post("https://localhost:4000/ubicacion/", this.editedItem)
+                this.ubicaciones.push(response.data.ubicacion)
             } catch (error) {
                 console.log(error)
             }
         },
 
-        async editResponsable() {
+        async editUbicacion() {
             try {
-                const response = await axios.put(`https://localhost:4000/responsable/${this.editedItem.id}`, this.editedItem)
-                await Object.assign(this.responsables[this.editedIndex], await response.data.responsable)
+                const response = await axios.put(`https://localhost:4000/ubicacion/${this.editedItem.id}`, this.editedItem)
+                await Object.assign(this.ubicaciones[this.editedIndex], await response.data.ubicacion)
 
-                await axios.delete(`https://localhost:4000/responsable/${response.data.responsable.id}/activos`)
+                await axios.delete(`https://localhost:4000/ubicacion/${response.data.ubicacion.id}/activos`)
                 
-                this.activosSelected.forEach(async (activo) => await axios.put(`https://localhost:4000/responsable/${response.data.responsable.id}/activo/${activo.id}`))
+                this.activosSelected.forEach(async (activo) => await axios.put(`https://localhost:4000/ubicacion/${response.data.ubicacion.id}/activo/${activo.id}`))
             } catch (error) {
                 console.log(error)
             }
         },
 
        async editItem(item) {
-          this.editedIndex = this.responsables.indexOf(item)
+          this.editedIndex = this.ubicaciones.indexOf(item)
           this.editedItem = Object.assign({}, item)
           
           if (item.imagen) this.imagePreview = URL.createObjectURL(new Blob([new Uint8Array(item.imagen.data)], { type: "image/png"}))
 
           this.activosSelected = []
-          const activos = (await axios.get(`https://localhost:4000/responsable/${item.id}/activos`)).data
+          const activos = (await axios.get(`https://localhost:4000/ubicacion/${item.id}/activos`)).data
           activos.forEach((a) => this.activosSelected.push(this.activos.find((a2) => a.id == a2.id)))
          
           this.dialog = true
         },
   
         deleteItem(item) {
-          this.editedIndex = this.responsables.indexOf(item)
+          this.editedIndex = this.ubicaciones.indexOf(item)
           this.editedItem = Object.assign({}, item)
           this.dialogDelete = true
         },
   
         async deleteItemConfirm() {
           try {
-            const response = await axios.delete(`https://localhost:4000/responsable/${this.editedItem.id}`)
-            if (response.status == 200) this.responsables.splice(this.editedIndex, 1)
+            const response = await axios.delete(`https://localhost:4000/ubicacion/${this.editedItem.id}`)
+            if (response.status == 200) this.ubicaciones.splice(this.editedIndex, 1)
           } catch (error) {
             console.log(error)
           }
@@ -309,9 +297,9 @@
   
         async save() {
           if (this.editedIndex > -1) {
-            await this.editResponsable()
+            await this.editUbicacion()
           } else {
-           await this.createResponsable()
+           await this.createUbicacion()
           }
 
           this.close()
@@ -338,7 +326,7 @@
         },
 
         async showActivosDialog(item) {
-            this.activosSelected = (await axios.get(`https://localhost:4000/responsable/${item.id}/activos`)).data
+            this.activosSelected = (await axios.get(`https://localhost:4000/ubicacion/${item.id}/activos`)).data
             this.activosDialog = true
         },
 

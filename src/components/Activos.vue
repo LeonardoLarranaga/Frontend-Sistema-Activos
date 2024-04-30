@@ -47,7 +47,7 @@
                     </v-col>
                     
                     <v-col cols="12" sm="6">
-                        <v-select :item-props="this.ubicacionProps" v-model="this.ubicacionSelected" clearable label="Ubicación" :items="this.ubicaciones" prepend-inner-icon="mdi-map-marker"/> 
+                        <v-select :item-props="this.ubicacionProps" v-model="this.ubicacionSelected" clearable label="Ubicación" :items="this.ubicaciones" prepend-inner-icon="mdi-archive-marker"/> 
                     </v-col>
                     
                     <v-col cols="12" sm="6">

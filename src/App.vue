@@ -24,9 +24,10 @@
         <v-divider></v-divider>
 
         <v-list density="compact" nav>
-          <v-list-item prepend-icon="mdi-key-chain" title="Login" value="home" link to="/"></v-list-item>
-          <v-list-item prepend-icon="mdi-package" title="Activos" value="account" link to="/activos"></v-list-item>
-          <v-list-item prepend-icon="mdi-account-tie" title="Responsables" value="users" link to="/responsables"></v-list-item>
+          <v-list-item prepend-icon="mdi-key-chain" title="Login" link to="/"/>
+          <v-list-item prepend-icon="mdi-package" title="Activos" link to="/activos"/>
+          <v-list-item prepend-icon="mdi-account-tie" title="Responsables" link to="/responsables"/>
+          <v-list-item prepend-icon="mdi-archive-marker" title="Ubicaciones" link to="/ubicaciones"/>
         </v-list>
       </v-navigation-drawer>
       <v-main style="height: 100vh">
