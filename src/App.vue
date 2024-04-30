@@ -7,14 +7,14 @@
         permanent
         @click="rail = false"
       >
-        <v-list-item
-          prepend-avatar="https://randomuser.me/api/portraits/men/85.jpg"
-          title="John Leider"
+      <v-list-item
+          title="Sistema de Control de Activos"
+          subtitle="Usuario"
           nav
         >
           <template v-slot:append>
             <v-btn
-              icon="mdi-chevron-left"
+              :icon="rail ? 'mdi-chevron-right' : 'mdi-chevron-left'"
               variant="text"
               @click.stop="rail = !rail"
             ></v-btn>
@@ -24,8 +24,8 @@
         <v-divider></v-divider>
 
         <v-list density="compact" nav>
-          <v-list-item prepend-icon="mdi-home-city" title="Home" value="home"></v-list-item>
-          <v-list-item prepend-icon="mdi-account" title="My Account" value="account"></v-list-item>
+          <v-list-item prepend-icon="mdi-key-chain" title="Login" value="home" link to="/"></v-list-item>
+          <v-list-item prepend-icon="mdi-package" title="Activos" value="account" link to="/activos"></v-list-item>
           <v-list-item prepend-icon="mdi-account-group-outline" title="Users" value="users"></v-list-item>
         </v-list>
       </v-navigation-drawer>
