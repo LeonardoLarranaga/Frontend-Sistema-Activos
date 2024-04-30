@@ -1,6 +1,5 @@
 <template>
-    <v-data-table 
-      :headers="headers" :items="activos" :items-per-page="-1" :sort-by="[{ key: 'id', order: 'desc' }]" fixed-header height="90vh">
+    <v-data-table :headers="headers" :items="activos" :items-per-page="-1" :sort-by="[{ key: 'id', order: 'desc' }]" fixed-header height="90vh">
 
       <template v-slot:item.ubicacionId="{ item }">
         <span v-if="ubicaciones.length > 0">
@@ -60,13 +59,13 @@
                     </v-col>
 
                     <v-col cols = "12">
-                        <v-file-input accept="image/*" label="Imagen" prepend-icon="mdi-image"  @change="selectImage"/>
+                        <v-file-input accept="image/*" label="Imagen" prepend-icon="mdi-image"  @change="selectImage" v-model="imageModel"/>
                     </v-col>
 
                     <v-col v-if="this.imagePreview != null" cols="12">
                         <v-card-text class="text-center">
                             <v-img :src="imagePreview" alt="Imagen"/>
-                            <v-btn  prepend-icon="mdi-image-remove" variant="tonal" color="deep-orange-accent-4" class="mt-4" @click="this.imagePreview = null; this.editedItem.imagen = null">Eliminar Imagen</v-btn>
+                            <v-btn  prepend-icon="mdi-image-remove" variant="tonal" color="deep-orange-accent-4" class="mt-4" @click="this.imagePreview = null; this.editedItem.imagen = null; this.imageModel = null; this.imageEdited = true">Eliminar Imagen</v-btn>
                         </v-card-text>
                     </v-col>
                   </v-row>
@@ -97,16 +96,14 @@
       </template>
   
       <template v-slot:item.actions="{ item }">
-        <div class="d-flex justify-center">
-            <div>
-            <v-icon size="small" @click="showImageDialog(item)"> mdi-image </v-icon>
-            <v-icon size="small" @click="editItem(item)"> mdi-pencil </v-icon>
-            </div>
-            <div>
-            <v-icon size="small" @click="showTagsDialog(item)"> mdi-tag-multiple </v-icon>
-            <v-icon size="small" @click="deleteItem(item)"> mdi-delete </v-icon>
-            </div>
-        </div>
+          <div>
+            <v-icon class="mr-3" size="small" @click="showImageDialog(item)"> mdi-image </v-icon>
+            <v-icon class="mr-3" size="small" @click="editItem(item)"> mdi-pencil </v-icon>
+          </div>
+          <div>
+            <v-icon class="mr-3" size="small" @click="showTagsDialog(item)"> mdi-tag-multiple </v-icon>
+            <v-icon class="mr-3" size="small" @click="deleteItem(item)"> mdi-delete </v-icon>
+          </div>
 </template>
 
     </v-data-table>
@@ -147,6 +144,7 @@
         tagsDialog: false,
         imagePreview: null,
         imageEdited: false,
+        imageModel: null,
         ubicaciones: [],
         ubicacionSelected: null,
         responsables: [],
@@ -224,12 +222,13 @@
       }),
   
       watch: {
-        dialog(val) {
+        async dialog(val) {
             if (!val) {
                 this.close()
                 this.ubicacionSelected = null
                 this.responsableSelected = null
                 this.imagePreview = null
+                if (this.imageEdited) await this.fetchActivos()
                 this.imageEdited = false
                 this.tagsSelected = []
             }
@@ -315,7 +314,6 @@
             })
 
             await Object.assign(this.activos[this.editedIndex], response.data.activo)
-            if (this.imageEdited) await this.fetchActivos()
           } catch (error) {
             console.log(error)
           }
