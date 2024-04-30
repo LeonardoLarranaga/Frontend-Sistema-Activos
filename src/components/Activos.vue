@@ -96,15 +96,19 @@
       </template>
   
       <template v-slot:item.actions="{ item }">
+        <div class="d-flex justify-center">
           <div>
-            <v-icon class="mr-3" size="small" @click="showImageDialog(item)"> mdi-image </v-icon>
-            <v-icon class="mr-3" size="small" @click="editItem(item)"> mdi-pencil </v-icon>
+            <v-icon size="small" @click="showImageDialog(item)"> mdi-image </v-icon>
+            <v-icon size="small" @click="editItem(item)"> mdi-pencil </v-icon>
           </div>
+        </div>
+        <div class="d-flex justify-center mt-2">
           <div>
-            <v-icon class="mr-3" size="small" @click="showTagsDialog(item)"> mdi-tag-multiple </v-icon>
-            <v-icon class="mr-3" size="small" @click="deleteItem(item)"> mdi-delete </v-icon>
+            <v-icon size="small" @click="showTagsDialog(item)"> mdi-tag-multiple </v-icon>
+            <v-icon size="small" @click="deleteItem(item)"> mdi-delete </v-icon>
           </div>
-</template>
+        </div>
+    </template>
 
     </v-data-table>
 
