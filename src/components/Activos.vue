@@ -1,5 +1,5 @@
 <template>
-    <v-data-table :headers="headers" :items="activos" :items-per-page="-1" :sort-by="[{ key: 'id', order: 'desc' }]" fixed-header height="90vh">
+    <v-data-table v-if="store.isSignedIn" :headers="headers" :items="activos" :items-per-page="-1" :sort-by="[{ key: 'id', order: 'desc' }]" fixed-header height="90vh">
 
       <template v-slot:item.ubicacionId="{ item }">
         <span v-if="ubicaciones.length > 0">
@@ -139,10 +139,12 @@
   
   <script>
   import axios from "axios"
+  import { store } from "../store"
   
   export default {
       data: () => ({
         dialog: false,
+        store: store(),
         dialogDelete: false,
         imageDialog: false,
         tagsDialog: false,
