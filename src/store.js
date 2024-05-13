@@ -6,10 +6,7 @@ export const store = defineStore('store', {
         return {
             isSignedIn: useLocalStorage('isSignedIn', false),
             rail: useLocalStorage('rail', false),
-            user: useLocalStorage('user', {
-                name: "",
-                image: ""
-            }),
+            user: useLocalStorage('user', {}),
             saludo: useLocalStorage('saludo', "")
         }
     },

@@ -27,13 +27,7 @@ export default {
   data() {
     return {
       store: store(),
-      saludo: "test"
     }
-  },
-
-  methods: {
-
   }
 }
-
 </script>

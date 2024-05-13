@@ -137,7 +137,8 @@
           },
           {
             title: 'Acciones',
-            key: 'actions'
+            key: 'actions',
+            sortable: false
           }
         ],
         activosHeaders: [
@@ -167,7 +168,8 @@
             sortable: true
           }, {
             title: 'Imagen',
-            key: 'actions'
+            key: 'actions',
+            sortable: false
           }
         ],
         activos: [],

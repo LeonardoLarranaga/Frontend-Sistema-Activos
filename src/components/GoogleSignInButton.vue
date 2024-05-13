@@ -5,6 +5,8 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import { store } from '../store'
+import { Buffer } from 'buffer'
+import axios from 'axios'
 
 const globalStore = store()
 
@@ -31,36 +33,26 @@ onMounted(() => {
     })
 })
 
-
 function parseJWT(token) {
-    const base64URL = token.split('.')[1]
-    const base64 = base64URL.replace(/-/g, '+').replace(/_/g, '/')
+    return JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString())
+}
 
-    const payload = decodeURIComponent(atob(base64).split('').map(function (c) {
-        return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)
-    }).join(''))
-
-    return JSON.parse(payload)
+async function googleCredencialToToken(googleUser) {
+    const jwtToken = await axios.post("https://localhost:4000/passport/crearJWT/", {credential: googleUser.credential})
+    return jwtToken.data
 }
 
 async function onSuccess(googleUser) {
     const user = parseJWT(googleUser.credential)
-    console.log(googleUser.credential)
-    console.log(user)
-
-    const blob = new Blob([googleUser.credential], {
-        type: "text/plain"
-    })
-
-    console.log(blob)
-
-    const text = await new Response(blob).text()
-    console.log(text)
+    const jwtToken = await googleCredencialToToken(googleUser)
 
     globalStore.updateUser({
         name: user.name,
-        image: user.picture
+        image: user.picture,
+        token: jwtToken
     })
+
+    console.log(globalStore.user.token)    
 
     globalStore.updateIsSignedIn(true)
     globalStore.updateRail(true)

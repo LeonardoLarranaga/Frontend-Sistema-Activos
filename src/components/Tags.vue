@@ -119,7 +119,8 @@
           },
           {
             title: 'Acciones',
-            key: 'actions'
+            key: 'actions',
+            sortable: false
           }
         ],
         activosHeaders: [
