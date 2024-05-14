@@ -1,5 +1,5 @@
 <template>
-  <v-data-table v-if="store.isSignedIn" :headers="headers" :items="activos" :items-per-page="-1"
+  <v-data-table v-if="store.isSignedIn" :headers="headers" :items="activos" :search="search" :custom-filter="searchActivos" :items-per-page="-1"
     :sort-by="[{ key: 'id', order: 'desc' }]" fixed-header height="90vh">
 
     <template v-slot:item.ubicacionId="{ item }">
@@ -18,6 +18,8 @@
       <v-toolbar color="indigo-darken-2">
         <v-toolbar-title color="indigo-darken-2">Activos</v-toolbar-title>
         <v-divider class="mx-4" inset vertical></v-divider>
+
+        <v-text-field prepend-inner-icon="mdi-magnify" density="compact" label="Buscar activos..." variant="outlined" hide-details v-model="search" style="margin-right: 20px; max-width: 300px;"/>
 
         <v-dialog v-model="dialog" max-width="500px">
           <template v-slot:activator="{ props }">
@@ -176,6 +178,7 @@ export default {
     responsableSelected: null,
     errorDialog: false,
     errorMessage: "",
+    search: "",
     tags: [],
     tagsSelected: [],
     headers: [
@@ -261,6 +264,7 @@ export default {
         this.tagsSelected = []
       }
     },
+
     dialogDelete(val) {
       val || this.closeDelete()
     },
@@ -447,6 +451,18 @@ export default {
         this.errorMessage = error.response.data || "Error de conexión."
         this.errorDialog = true
       }
+    },
+
+    searchActivos(_, search, item) {
+      const query = new RegExp(search, "i")
+
+      return search.trim() === "" ||
+              query.test(item.columns.id.test) || 
+              query.test(item.columns.numSerie) || 
+              query.test(item.columns.numInventario) || 
+              query.test(item.columns.descripcion) || 
+              query.test(this.responsables.find((r) => r.id == item.columns.responsableId)?.nombre || "") || 
+              query.test(this.ubicaciones.find((u) => u.id == item.columns.ubicacionId)?.descripcion || "")
     },
 
     ubicacionProps(item) {

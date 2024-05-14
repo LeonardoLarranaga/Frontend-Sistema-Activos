@@ -1,10 +1,12 @@
 <template>
-    <v-data-table :headers="headers" :items="responsables" :items-per-page="-1" :sort-by="[{ key: 'id', order: 'desc' }]" fixed-header height="90vh">
+    <v-data-table :headers="headers" :items="responsables" :items-per-page="-1" :search="search" :sort-by="[{ key: 'id', order: 'desc' }]" fixed-header height="90vh">
   
       <template v-slot:top>
         <v-toolbar color="indigo-darken-2">
           <v-toolbar-title color="indigo-darken-2">Responsables</v-toolbar-title>
           <v-divider class="mx-4" inset vertical></v-divider>
+
+          <v-text-field prepend-inner-icon="mdi-magnify" density="compact" label="Buscar responsables..." variant="outlined" hide-details v-model="search" style="margin-right: 20px; max-width: 300px;"/>
   
           <v-dialog v-model="dialog" max-width="500px">
             <template v-slot:activator="{ props }">
@@ -137,6 +139,7 @@
         imageModel: null,
         errorDialog: false,
         errorMessage: "",
+        search: "",
         activosSelected: [],
         activos: [],
         responsables: [],

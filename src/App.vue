@@ -48,7 +48,7 @@
         </v-col>
 
         <v-col class="d-flex">
-          <v-text-field v-model="pass" :type="showPassword ? 'text' : 'password'" label="Contraseña" style="margin-right: 16px; margin-left: 10px;"/>
+          <v-text-field v-model="pass" :type="showPassword ? 'text' : 'password'" label="Contraseña de Admin..." style="margin-right: 16px; margin-left: 10px;"/>
           <v-btn icon @click="showPassword = !showPassword" style="margin-right: 8px">
             <v-icon>{{ showPassword ? 'mdi-eye-off' : 'mdi-eye' }}</v-icon>
           </v-btn>
