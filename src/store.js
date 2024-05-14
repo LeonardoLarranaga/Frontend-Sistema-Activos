@@ -7,7 +7,8 @@ export const store = defineStore('store', {
             isSignedIn: useLocalStorage('isSignedIn', false),
             rail: useLocalStorage('rail', false),
             user: useLocalStorage('user', {}),
-            saludo: useLocalStorage('saludo', "")
+            saludo: useLocalStorage('saludo', ""),
+            headers: useLocalStorage('headers', {})
         }
     },
 
@@ -26,6 +27,10 @@ export const store = defineStore('store', {
 
         updateSaludo(payload) {
             this.saludo = payload
+        },
+
+        updateHeaders(payload) {
+            this.headers = payload
         }
     }
 })

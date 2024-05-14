@@ -113,13 +113,21 @@
         </v-dialog>
     </template>
 
+    <v-dialog v-model="this.errorDialog" max-width="300px">
+      <v-card color="red">
+        <v-card-title style="color: white;" class="text-wrap text-center">{{ errorMessage }}</v-card-title>
+        <v-btn variant="tonal" @click="errorDialog = false; error = ''" style="color: white;">OK</v-btn>
+      </v-card>
+  </v-dialog>
   </template>
   
   <script>
   import axios from "axios"
+  import { store } from "../store"
   
   export default {
       data: () => ({
+        store: store(),
         dialog: false,
         dialogDelete: false,
         imageDialog: false,
@@ -127,6 +135,8 @@
         imagePreview: null,
         imageEdited: false,
         imageModel: null,
+        errorDialog: false,
+        errorMessage: "",
         activosSelected: [],
         activos: [],
         responsables: [],
@@ -221,42 +231,46 @@
       methods: {
         async fetchResponsables() {
             try {
-                const response = await axios.get("https://localhost:4000/responsable/")
+                const response = await axios.get("https://localhost:4000/responsable/", this.store.headers)
                 this.responsables = response.data
             } catch (error) {
-                console.log(error)
+              this.errorMessage = error.response.data || "Error de conexión."
+              this.errorDialog = true            
             }
         },
 
         async fetchActivos() {
             try {
-                const response = await axios.get("https://localhost:4000/activo/")
+                const response = await axios.get("https://localhost:4000/activo/", this.store.headers)
                 this.activos = response.data
             } catch (error) {
-                console.log(error)
+              this.errorMessage = error.response.data || "Error de conexión."
+              this.errorDialog = true
             }
         },
 
         async createResponsable() {
             try {
-                const response = await axios.post("https://localhost:4000/responsable/", this.editedItem)
-                this.activosSelected.forEach(async (activo) => await axios.put(`https://localhost:4000/responsable/${response.data.responsable.id}/activo/${activo.id}`))
+                const response = await axios.post("https://localhost:4000/responsable/", this.editedItem, this.store.headers)
+                this.activosSelected.forEach(async (activo) => await axios.put(`https://localhost:4000/responsable/${response.data.responsable.id}/activo/${activo.id}`, this.store.headers))
                 this.responsables.push(response.data.responsable)
             } catch (error) {
-                console.log(error)
+              this.errorMessage = error.response.data || "Error de conexión."
+              this.errorDialog = true
             }
         },
 
         async editResponsable() {
             try {
-                const response = await axios.put(`https://localhost:4000/responsable/${this.editedItem.id}`, this.editedItem)
+                const response = await axios.put(`https://localhost:4000/responsable/${this.editedItem.id}`, this.editedItem, this.store.headers)
                 await Object.assign(this.responsables[this.editedIndex], await response.data.responsable)
 
-                await axios.delete(`https://localhost:4000/responsable/${response.data.responsable.id}/activos`)
+                await axios.delete(`https://localhost:4000/responsable/${response.data.responsable.id}/activos`, this.store.headers)
                 
-                this.activosSelected.forEach(async (activo) => await axios.put(`https://localhost:4000/responsable/${response.data.responsable.id}/activo/${activo.id}`))
+                this.activosSelected.forEach(async (activo) => await axios.put(`https://localhost:4000/responsable/${response.data.responsable.id}/activo/${activo.id}`, {}, this.store.headers))
             } catch (error) {
-                console.log(error)
+              this.errorMessage = error.response.data || "Error de conexión."
+              this.errorDialog = true
             }
         },
 
@@ -267,7 +281,7 @@
           if (item.imagen) this.imagePreview = URL.createObjectURL(new Blob([new Uint8Array(item.imagen.data)], { type: "image/png"}))
 
           this.activosSelected = []
-          const activos = (await axios.get(`https://localhost:4000/responsable/${item.id}/activos`)).data
+          const activos = (await axios.get(`https://localhost:4000/responsable/${item.id}/activos`, this.store.headers)).data
           activos.forEach((a) => this.activosSelected.push(this.activos.find((a2) => a.id == a2.id)))
          
           this.dialog = true
@@ -281,10 +295,11 @@
   
         async deleteItemConfirm() {
           try {
-            const response = await axios.delete(`https://localhost:4000/responsable/${this.editedItem.id}`)
+            const response = await axios.delete(`https://localhost:4000/responsable/${this.editedItem.id}`, this.store.headers)
             if (response.status == 200) this.responsables.splice(this.editedIndex, 1)
           } catch (error) {
-            console.log(error)
+            this.errorMessage = error.response.data || "Error de conexión."
+            this.errorDialog = true
           }
   
           this.closeDelete()
@@ -338,7 +353,7 @@
         },
 
         async showActivosDialog(item) {
-            this.activosSelected = (await axios.get(`https://localhost:4000/responsable/${item.id}/activos`)).data
+            this.activosSelected = (await axios.get(`https://localhost:4000/responsable/${item.id}/activos`, this.store.headers)).data
             this.activosDialog = true
         },
 
