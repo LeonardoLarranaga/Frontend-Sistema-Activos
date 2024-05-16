@@ -94,7 +94,7 @@ export default {
     async dialog(val) {
       if (val) {
         try {
-          const permisos = (await axios.get(`https://localhost:4000/usuario/token/${this.store.user.token}`)).data.permisos
+          const permisos = (await axios.get("https://localhost:4000/usuario/", this.store.headers)).data.permisos
           if (permisos === "r") {
             this.leer = true
             this.leerEscribir = false
@@ -133,7 +133,7 @@ export default {
         const permisos = this.leerEscribir ? "rw" : "r"
 
         const pass = this.pass.length === 0 ? "0000" : this.pass
-        await axios.patch(`https://localhost:4000/usuario/${this.store.user.token}/${permisos}/${pass}/`)
+        await axios.patch(`https://localhost:4000/usuario/${permisos}/${pass}/`, {}, this.store.headers)
 
         window.location.reload()
       } catch (error) {

@@ -33,49 +33,18 @@ onMounted(() => {
     })
 })
 
-function parseJWT(token) {
-    return JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString())
-}
-
-async function googleCredencialToToken(googleUser) {
-    const jwtToken = await axios.post("https://localhost:4000/passport/crearJWT/", { credential: googleUser.credential })
-    return jwtToken.data
-}
-
 async function onSuccess(googleUser) {
-    const user = parseJWT(googleUser.credential)
-    const jwtToken = await googleCredencialToToken(googleUser)
-
-    if (!user || !jwtToken) {
-        console.log("Error de user o jwtToken.")
-        return
-    }
-
-    let usuarioBD = null
-
     try {
-        usuarioBD = (await axios.get(`https://localhost:4000/usuario/email/${user.email}`)).data
-    } catch {
-        try {
-            usuarioBD = (await axios.post("https://localhost:4000/usuario", {
-                token: jwtToken,
-                email: user.email,
-                permisos: "r"
-            })).data.usuario
-        } catch (error) {
-            console.log(error)
-        }
-    }
+        const response = await axios.post(`https://localhost:4000/passport/google/`, { googleUser: googleUser })
 
-    if (usuarioBD) {
         globalStore.updateUser({
-            name: user.name,
-            image: await user.picture,
-            token: usuarioBD.token
+            name: response.data.user.name,
+            email: response.data.user.email,
+            image: response.data.user.image
         })
 
-        globalStore.updateHeaders({ headers: { Authorization: `bearer ${usuarioBD.token}` } })
-        console.log(globalStore.user.image)
+        globalStore.updateHeaders({ headers: { Authorization: `bearer ${response.data.token}` } })
+
         globalStore.updateIsSignedIn(true)
         globalStore.updateRail(true)
 
@@ -83,14 +52,16 @@ async function onSuccess(googleUser) {
         let mensaje
 
         if (hora >= 5 && hora < 12) {
-            mensaje = `¡Buenos días, ${user.name}!`
+            mensaje = `¡Buenos días, ${globalStore.user.name}!`
         } else if (hora >= 12 && hora < 18) {
-            mensaje = `¡Buenas tardes, ${user.name}!`
+            mensaje = `¡Buenas tardes, ${globalStore.user.name}!`
         } else {
-            mensaje = `¡Buenas noches, ${user.name}!`
+            mensaje = `¡Buenas noches, ${globalStore.user.name}!`
         }
 
         globalStore.updateSaludo(mensaje)
+    } catch (error) {
+        console.log(error)
     }
 }
 </script>
